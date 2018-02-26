@@ -1,13 +1,26 @@
 {
-    "name": "transparent-rpc",
-    "version": "0.0.1",
-    "description": "Easy to use async RPC for node, based on promises. Similar in spirit to Java RMI",
-    "author": {
-        "name": "Giovanni Campagna",
-        "email": "gcampagn@cs.stanford.edu"
-    },
-    "main": "rpc_socket.js",
-    "dependencies": {
-        "q": "~1.4.0"
-    }
+  "name": "transparent-rpc",
+  "version": "0.0.1",
+  "description": "Easy to use async RPC for node, based on promises. Similar in spirit to Java RMI",
+  "author": "Giovanni Campagna <gcampagn@cs.stanford.edu>",
+  "main": "rpc_socket.js",
+  "dependencies": {
+    "q": "~1.4.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Stanford-Mobisocial-IoT-Lab/transparent-rpc.git"
+  },
+  "keywords": [
+    "rpc",
+    "proxy"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Stanford-Mobisocial-IoT-Lab/transparent-rpc/issues"
+  },
+  "homepage": "https://github.com/Stanford-Mobisocial-IoT-Lab/transparent-rpc#readme"
 }
