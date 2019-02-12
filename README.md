@@ -1,5 +1,7 @@
 # Transparent RPC
 
+[![Build Status](https://travis-ci.org/Stanford-Mobisocial-IoT-Lab/transparent-rpc.svg?branch=master)](https://travis-ci.org/Stanford-Mobisocial-IoT-Lab/transparent-rpc) [![Coverage Status](https://coveralls.io/repos/github/Stanford-Mobisocial-IoT-Lab/transparent-rpc/badge.svg?branch=master)](https://coveralls.io/github/Stanford-Mobisocial-IoT-Lab/transparent-rpc?branch=master) [![Dependency Status](https://david-dm.org/Stanford-Mobisocial-IoT-Lab/transparent-rpc/status.svg)](https://david-dm.org/Stanford-Mobisocial-IoT-Lab/transparent-rpc) [![Greenkeeper badge](https://badges.greenkeeper.io/Stanford-Mobisocial-IoT-Lab/transparent-rpc.svg)](https://greenkeeper.io/) [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/Stanford-Mobisocial-IoT-Lab/transparent-rpc.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Stanford-Mobisocial-IoT-Lab/transparent-rpc/context:javascript)
+
 Automatic Proxy-based RPC for Node.js
 
 ## How to use:
