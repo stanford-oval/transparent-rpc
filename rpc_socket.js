@@ -24,7 +24,6 @@
 "use strict";
 
 const events = require('events');
-const util = require('util');
 const Q = require('q');
 
 // this is a separate function to keep the environment clean
@@ -35,11 +34,11 @@ function make$free(obj, knownStubIds, id) {
         obj.$free = function() {
             knownStubIds.delete(id);
             return prev$free();
-        }
+        };
     } else {
         obj.$free = function() {
             knownStubIds.delete(id);
-        }
+        };
     }
 }
 
@@ -64,10 +63,10 @@ class RpcSocket extends events.EventEmitter {
             this.emit('error', err);
         });
         this._socket.on('end', () => this.emit('end'));
-        this._socket.on('close', function(hadError) {
+        this._socket.on('close', (hadError) => {
             this._ended = true;
             this.emit('close', hadError);
-        }.bind(this));
+        });
     }
 
     end(callback) {
@@ -194,7 +193,7 @@ class RpcSocket extends events.EventEmitter {
             return;
         }
 
-        Q.try(function() {
+        Q.try(() => {
             if (!this._knownStubIds.has(msg.obj))
                 throw new Error('Invalid object 0x' + msg.obj.toString(16));
 
@@ -206,24 +205,25 @@ class RpcSocket extends events.EventEmitter {
             var method = msg.method;
 
             if (method.substr(0,4) === 'get ') {
-                if (unmarshalled.length != 0)
+                if (unmarshalled.length !== 0)
                     throw new Error('Wrong number of arguments, expected 0');
 
                 return stub.get([method.substr(4)]);
             } else if (method.substr(0,4) === 'set ') {
-                if (unmarshalled.length != 1)
+                if (unmarshalled.length !== 1)
                     throw new Error('Wrong number of arguments, expected 1');
 
                 stub.set([method.substr(4)], unmarshalled[0]);
+                return Q();
             } else {
                 return stub.call(method, unmarshalled);
             }
-        }.bind(this)).then(function(reply) {
+        }).then((reply) => {
             if (msg.id !== null) {
                 this._socket.write({control:'reply', id: msg.id,
                                     reply: this._marshalArgument(reply)});
             }
-        }.bind(this)).catch(function(error) {
+        }).catch((error) => {
             if (msg.id !== null) {
                 if (error.name === 'SyntaxError') {
                     console.error(error.stack);
@@ -243,7 +243,7 @@ class RpcSocket extends events.EventEmitter {
             } else {
                 console.error('Discarded error from RPC call: ' + error.message);
             }
-        }.bind(this)).done();
+        }).done();
     }
 
     _handleReply(msg) {
@@ -275,7 +275,7 @@ class RpcSocket extends events.EventEmitter {
 
     _handleMessage(msg) {
         switch (msg.control) {
-        case 'new-object':
+        case 'new-object': {
             if (this._knownProxies.has(msg.obj))
                 return;
 
@@ -284,23 +284,18 @@ class RpcSocket extends events.EventEmitter {
             proxy.$free = () => {
                 this._knownProxies.delete(msg.obj);
             };
-            return;
+            break;
+        }
 
         case 'call':
             this._handleCall(msg);
-            return;
+            break;
 
         case 'reply':
             this._handleReply(msg);
-            return;
+            break;
         }
     }
-}
-
-var stubCnt = 1;
-
-function isStubId(rpcId) {
-    return rpcId >> 24 === process.pid;
 }
 
 function RpcStub(object, rpcId, methods) {
@@ -314,23 +309,23 @@ function RpcStub(object, rpcId, methods) {
 RpcStub.prototype._validateCall = function(method) {
     if (this.methods.indexOf(method) < 0)
         throw new Error('Invalid method ' + method);
-}
+};
 
 RpcStub.prototype.get = function(name) {
     this._validateCall('get ' + name);
     return this.object[name];
-}
+};
 
 RpcStub.prototype.set = function(name, value) {
     // NOTE: not a typo here, 'get foo' allows both get and set of foo
     this._validateCall('get ' + name);
     this.object[name] = value;
-}
+};
 
 RpcStub.prototype.call = function(method, args) {
     this._validateCall(method);
     return this.object[method].apply(this.object, args);
-}
+};
 
 function RpcProxy(socket, id, methods) {
     if (!(this instanceof RpcProxy)) return new RpcProxy(socket);
