@@ -23,6 +23,8 @@
 // IN THE SOFTWARE.
 "use strict";
 
+const Q = require('q');
+Q.longStackSupport = true;
 process.on('unhandledRejection', (up) => { throw up; });
 process.env.TEST_MODE = '1';
 
@@ -181,9 +183,141 @@ async function testProxyOtherDirection() {
     await r1.call(stubId, 'checkObject', [new MyObject('y'), 'y']);
 }
 
+function isThenable(x) {
+    return typeof x === 'object' && typeof x.then === 'function';
+}
+
+async function testMarshal() {
+    const [s1, s2] = socketpair({ objectMode: true });
+
+    const r1 = new rpc.Socket(s1);
+    const r2 = new rpc.Socket(s2);
+
+    class MyObject {
+        constructor(owner, value) {
+            this._owner = owner;
+            this.value = value;
+        }
+        get owner() {
+            return this._owner;
+        }
+        getValue() {
+            return this.value;
+        }
+
+        frobnicate() {
+            return 42;
+        }
+
+        hidden() {
+            assert.fail('cannot call this');
+        }
+    }
+    MyObject.prototype.$rpcMethods = ['get owner', 'frobnicate', 'getValue'];
+
+    const stubId = r2.addStub({
+        $rpcMethods: ['getObject', 'checkObject'],
+
+        async getObject() {
+            return new MyObject(2, 'y');
+        },
+
+        async checkObject(stub, proxy, array, jsonObj, value) {
+            assert(stub instanceof MyObject);
+            assert.strictEqual(stub._owner, 2);
+            assert.strictEqual(stub.owner, 2);
+            assert.strictEqual(stub.value, 'y');
+            assert.strictEqual(stub.getValue(), 'y');
+
+            assert(proxy instanceof rpc.Proxy);
+            assert.strictEqual(typeof proxy.getValue, 'function');
+            assert.strictEqual(typeof proxy.frobnicate, 'function');
+            assert.strictEqual(typeof proxy.hidden, 'undefined');
+
+            assert(isThenable(proxy.owner));
+            assert(isThenable(proxy.getValue()));
+            assert.strictEqual(await proxy.owner, 1);
+            assert.strictEqual(await proxy.getValue(), 'x');
+
+            assert.strictEqual(array.length, 3);
+            assert.strictEqual(array[0], stub);
+            assert.strictEqual(array[1], proxy);
+            assert.strictEqual(array[2], 7);
+
+            assert.deepStrictEqual(jsonObj, {
+                a: 'a',
+                b: 'b',
+                c: 3
+            });
+
+            assert.strictEqual(value, '72');
+
+            return [stub, proxy, array, jsonObj, value];
+        }
+    });
+
+    const proxy1 = await r1.call(stubId, 'getObject', []);
+    const stub1 = new MyObject(1, 'x');
+
+    const result = await r1.call(stubId, 'checkObject', [proxy1, stub1, [proxy1, stub1, 7], {
+        a: 'a',
+        b: 'b',
+        c: 3
+    }, '72']);
+    assert.deepStrictEqual(result, [proxy1, stub1, [proxy1, stub1, 7], {
+        a: 'a',
+        b: 'b',
+        c: 3
+    }, '72']);
+
+    proxy1.$free();
+    stub1.$free();
+}
+
+async function testProxyFree() {
+    const [s1, s2] = socketpair({ objectMode: true });
+
+    const r1 = new rpc.Socket(s1);
+    const r2 = new rpc.Socket(s2);
+
+    class MyObject {
+        constructor(value) {
+            this.value = value;
+        }
+        getValue() {
+            return this.value;
+        }
+    }
+    MyObject.prototype.$rpcMethods = ['getValue'];
+
+    const stubId = r2.addStub({
+        $rpcMethods: ['getObject'],
+
+        _obj: new MyObject('x'),
+
+        getObject() {
+            return this._obj;
+        }
+    });
+
+    const proxy1 = await r1.call(stubId, 'getObject', []);
+    const proxy2 = await r1.call(stubId, 'getObject', []);
+    assert.strictEqual(proxy2, proxy1);
+    assert.strictEqual(await proxy1.getValue(), 'x');
+
+    proxy1.$free();
+
+    const proxy3 = await r1.call(stubId, 'getObject', []);
+    assert(proxy3 !== proxy1);
+
+    assert.strictEqual(await proxy3.getValue(), 'x');
+}
+
 async function main() {
     await testBasic();
     await testProxy();
     await testProxyOtherDirection();
+    await testMarshal();
+    await testProxyFree();
 }
 main();
