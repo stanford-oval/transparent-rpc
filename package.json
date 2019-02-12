@@ -14,7 +14,8 @@
   },
   "scripts": {
     "test": "nyc node ./test",
-    "lint": "eslint ./lib"
+    "lint": "eslint ./lib",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
