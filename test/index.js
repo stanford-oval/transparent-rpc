@@ -311,11 +311,51 @@ async function testProxyFree() {
     assert.strictEqual(await proxy3.getValue(), 'x');
 }
 
+async function testError() {
+    const [s1, s2] = socketpair({ objectMode: true });
+
+    const r1 = new rpc.Socket(s1);
+    const r2 = new rpc.Socket(s2);
+
+    class MyObject {
+        frobnicate() {
+            throw new TypeError('foo');
+        }
+    }
+    MyObject.prototype.$rpcMethods = ['frobnicate'];
+
+    const stubId = r2.addStub({
+        $rpcMethods: ['getObject'],
+
+        _obj: new MyObject(),
+
+        getObject() {
+            return this._obj;
+        }
+    });
+
+    const proxy = await r1.call(stubId, 'getObject', []);
+
+    const promise = proxy.frobnicate();
+    assert(isThenable(promise));
+
+    await new Promise((resolve, reject) => {
+        promise.then(() => {
+            reject(new Error(`Expected error`));
+        }, (e) => {
+            assert.strictEqual(e.name, 'Error');
+            assert.strictEqual(e.message, 'foo');
+            assert(e.stack.split('\n')[1].indexOf('MyObject.frobnicate') >= 0);
+        }).catch(reject);
+    });
+}
+
 async function main() {
     await testBasic();
     await testProxy();
     await testProxyOtherDirection();
     await testMarshal();
     await testProxyFree();
+    await testError();
 }
 main();
