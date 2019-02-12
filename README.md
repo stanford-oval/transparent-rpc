@@ -2,7 +2,7 @@
 
 Automatic Proxy-based RPC for Node.js
 
-## Now to use:
+## How to use:
 
 - Add `$rpcMethods` property to the prototype of the classes you want to export
 - Create `rpc.Socket` object wrapping the transport layer (an object-mode stream supporting arbitrary objects)
