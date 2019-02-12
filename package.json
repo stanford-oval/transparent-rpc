@@ -4,9 +4,7 @@
   "description": "Easy to use async RPC for node, based on promises. Similar in spirit to Java RMI",
   "author": "Giovanni Campagna <gcampagn@cs.stanford.edu>",
   "main": "lib/rpc_socket.js",
-  "dependencies": {
-    "q": "~1.4.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "coveralls": "^3.0.0",
     "eslint": "^5.3.0",
