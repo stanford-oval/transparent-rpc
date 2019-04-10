@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Stanford-Mobisocial-IoT-Lab/transparent-rpc.git"
+    "url": "git+https://github.com/stanford-oval/transparent-rpc.git"
   },
   "keywords": [
     "rpc",
@@ -25,7 +25,7 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Stanford-Mobisocial-IoT-Lab/transparent-rpc/issues"
+    "url": "https://github.com/stanford-oval/transparent-rpc/issues"
   },
-  "homepage": "https://github.com/Stanford-Mobisocial-IoT-Lab/transparent-rpc#readme"
+  "homepage": "https://github.com/stanford-oval/transparent-rpc#readme"
 }

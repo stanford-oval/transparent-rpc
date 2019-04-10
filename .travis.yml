@@ -22,4 +22,4 @@ deploy:
     secure: PianJrsSE1iBUc2c89jcTfKeQnX6cqe0OrJiuRNNYTvyLoDdWL+YkP8XZI3FV5DODk4BllaxoQjqH9fo8reDOkGzye2lj/FT9WNRTEN274cbWfq9bQzOVQY+QuCMpIcCo7vqvb4KTX0djsE9U/S7Os+1eVDi+bmYQ5APk2PzGEKr5gi+b4cAMjcKMnFomvc9fHDZNmoapv5cLLtoXRlgd3XcAGgCG7mU881orJe3PZ0T5rn+AczxsSAz42R3wK/fQRn5UunWeYWZsH4EX9jI4QLKHiiYExNqCE0nQh8Cv921htbTIpbgfhUAa0aBSvU8AFY4V9JXuQbZmQTajyNPwFLxSREOPgEh7iM3kEEFtpnGsML2qpDYYjGYPFZV8/bcD6WwMB8n+eZw/P/a5CG+n1YZ2S7cvX+0ea2ueRshfVquDNb72bFIjnYfGSoYpO6wczk8FRc8iCi/Z+1zTvtAplH8wIEAHlV8x+9Au6MHaD44C9CqZmrLQPhUOsb17KLSQhiDrlltlcpro3PqvvceAmQKouMc6q7li8B+gL+0reZYBH9EhIxLlX+nll/o2m9JqExX6Tt3oNQLtDAEu3VQM6kQb5R1ICq6bnCl3tg0rlU4FT4zN07+4M1kAsQcKSanlP5/wql0D/WQ2aJZaCtv1rhYMWjVrM5GErTfR4cjac8=
   on:
     tags: true
-    repo: Stanford-Mobisocial-IoT-Lab/transparent-rpc
+    repo: stanford-oval/transparent-rpc
