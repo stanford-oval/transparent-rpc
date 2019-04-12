@@ -319,7 +319,7 @@ async function testError() {
 
     class MyObject {
         frobnicate() {
-            throw new TypeError('foo');
+            throw new Error('foo');
         }
 
         withCode() {
@@ -328,11 +328,19 @@ async function testError() {
             throw err;
         }
 
+        typeError() {
+            throw new TypeError('foo');
+        }
+
+        typeError2() {
+            (undefined).foo;
+        }
+
         syntaxError() {
             JSON.parse('\n\ninvalid json');
         }
     }
-    MyObject.prototype.$rpcMethods = ['frobnicate', 'withCode', 'syntaxError'];
+    MyObject.prototype.$rpcMethods = ['frobnicate', 'typeError', 'typeError2', 'withCode', 'syntaxError'];
 
     const stubId = r2.addStub({
         $rpcMethods: ['getObject'],
@@ -382,6 +390,32 @@ async function testError() {
             reject(new Error(`Expected error`));
         }, (e) => {
             assert.strictEqual(e.name, 'SyntaxError');
+            resolve();
+        }).catch(reject);
+    });
+
+    const promise4 = proxy.typeError();
+    assert(isThenable(promise4));
+
+    await new Promise((resolve, reject) => {
+        promise4.then(() => {
+            reject(new Error(`Expected error`));
+        }, (e) => {
+            assert.strictEqual(e.name, 'TypeError');
+            assert.strictEqual(e.message, 'foo');
+            resolve();
+        }).catch(reject);
+    });
+
+    const promise5 = proxy.typeError2();
+    assert(isThenable(promise5));
+
+    await new Promise((resolve, reject) => {
+        promise5.then(() => {
+            reject(new Error(`Expected error`));
+        }, (e) => {
+            assert.strictEqual(e.name, 'TypeError');
+            assert.strictEqual(e.message, 'Cannot read property \'foo\' of undefined');
             resolve();
         }).catch(reject);
     });
