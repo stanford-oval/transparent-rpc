@@ -421,6 +421,33 @@ async function testError() {
     });
 }
 
+async function testInvalid() {
+    const [s1, s2] = socketpair({ objectMode: true });
+
+    const r1 = new rpc.Socket(s1);
+    const r2 = new rpc.Socket(s2);
+
+    await assert.rejects(async () => {
+        await r1.call(123456, 'foo', []);
+    }, (err) => {
+        return err.code === 'ENXIO';
+    });
+
+    const stubId = r2.addStub({
+        $rpcMethods: ['foo'],
+
+        foo() {
+            return 7;
+        }
+    });
+
+    await assert.rejects(async () => {
+        await r1.call(stubId, 'bar', []);
+    }, (err) => {
+        return err.name === 'TypeError';
+    });
+}
+
 async function main() {
     await testBasic();
     await testProxy();
@@ -428,5 +455,6 @@ async function main() {
     await testMarshal();
     await testProxyFree();
     await testError();
+    await testInvalid();
 }
 main();
