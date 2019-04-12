@@ -321,8 +321,18 @@ async function testError() {
         frobnicate() {
             throw new TypeError('foo');
         }
+
+        withCode() {
+            const err = new Error('my error message');
+            err.code = 'E_FOO_BAR_ERROR';
+            throw err;
+        }
+
+        syntaxError() {
+            JSON.parse('\n\ninvalid json');
+        }
     }
-    MyObject.prototype.$rpcMethods = ['frobnicate'];
+    MyObject.prototype.$rpcMethods = ['frobnicate', 'withCode', 'syntaxError'];
 
     const stubId = r2.addStub({
         $rpcMethods: ['getObject'],
@@ -346,6 +356,33 @@ async function testError() {
             assert.strictEqual(e.name, 'Error');
             assert.strictEqual(e.message, 'foo');
             assert(e.stack.split('\n')[1].indexOf('MyObject.frobnicate') >= 0);
+            resolve();
+        }).catch(reject);
+    });
+
+    const promise2 = proxy.withCode();
+    assert(isThenable(promise2));
+
+    await new Promise((resolve, reject) => {
+        promise2.then(() => {
+            reject(new Error(`Expected error`));
+        }, (e) => {
+            assert.strictEqual(e.name, 'Error');
+            assert.strictEqual(e.message, 'my error message');
+            assert.strictEqual(e.code, 'E_FOO_BAR_ERROR');
+            resolve();
+        }).catch(reject);
+    });
+
+    const promise3 = proxy.syntaxError();
+    assert(isThenable(promise3));
+
+    await new Promise((resolve, reject) => {
+        promise3.then(() => {
+            reject(new Error(`Expected error`));
+        }, (e) => {
+            assert.strictEqual(e.name, 'SyntaxError');
+            resolve();
         }).catch(reject);
     });
 }
