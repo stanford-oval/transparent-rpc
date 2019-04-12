@@ -319,10 +319,28 @@ async function testError() {
 
     class MyObject {
         frobnicate() {
+            throw new Error('foo');
+        }
+
+        withCode() {
+            const err = new Error('my error message');
+            err.code = 'E_FOO_BAR_ERROR';
+            throw err;
+        }
+
+        typeError() {
             throw new TypeError('foo');
         }
+
+        typeError2() {
+            (undefined).foo;
+        }
+
+        syntaxError() {
+            JSON.parse('\n\ninvalid json');
+        }
     }
-    MyObject.prototype.$rpcMethods = ['frobnicate'];
+    MyObject.prototype.$rpcMethods = ['frobnicate', 'typeError', 'typeError2', 'withCode', 'syntaxError'];
 
     const stubId = r2.addStub({
         $rpcMethods: ['getObject'],
@@ -346,7 +364,87 @@ async function testError() {
             assert.strictEqual(e.name, 'Error');
             assert.strictEqual(e.message, 'foo');
             assert(e.stack.split('\n')[1].indexOf('MyObject.frobnicate') >= 0);
+            resolve();
         }).catch(reject);
+    });
+
+    const promise2 = proxy.withCode();
+    assert(isThenable(promise2));
+
+    await new Promise((resolve, reject) => {
+        promise2.then(() => {
+            reject(new Error(`Expected error`));
+        }, (e) => {
+            assert.strictEqual(e.name, 'Error');
+            assert.strictEqual(e.message, 'my error message');
+            assert.strictEqual(e.code, 'E_FOO_BAR_ERROR');
+            resolve();
+        }).catch(reject);
+    });
+
+    const promise3 = proxy.syntaxError();
+    assert(isThenable(promise3));
+
+    await new Promise((resolve, reject) => {
+        promise3.then(() => {
+            reject(new Error(`Expected error`));
+        }, (e) => {
+            assert.strictEqual(e.name, 'SyntaxError');
+            resolve();
+        }).catch(reject);
+    });
+
+    const promise4 = proxy.typeError();
+    assert(isThenable(promise4));
+
+    await new Promise((resolve, reject) => {
+        promise4.then(() => {
+            reject(new Error(`Expected error`));
+        }, (e) => {
+            assert.strictEqual(e.name, 'TypeError');
+            assert.strictEqual(e.message, 'foo');
+            resolve();
+        }).catch(reject);
+    });
+
+    const promise5 = proxy.typeError2();
+    assert(isThenable(promise5));
+
+    await new Promise((resolve, reject) => {
+        promise5.then(() => {
+            reject(new Error(`Expected error`));
+        }, (e) => {
+            assert.strictEqual(e.name, 'TypeError');
+            assert.strictEqual(e.message, 'Cannot read property \'foo\' of undefined');
+            resolve();
+        }).catch(reject);
+    });
+}
+
+async function testInvalid() {
+    const [s1, s2] = socketpair({ objectMode: true });
+
+    const r1 = new rpc.Socket(s1);
+    const r2 = new rpc.Socket(s2);
+
+    await assert.rejects(async () => {
+        await r1.call(123456, 'foo', []);
+    }, (err) => {
+        return err.code === 'ENXIO';
+    });
+
+    const stubId = r2.addStub({
+        $rpcMethods: ['foo'],
+
+        foo() {
+            return 7;
+        }
+    });
+
+    await assert.rejects(async () => {
+        await r1.call(stubId, 'bar', []);
+    }, (err) => {
+        return err.name === 'TypeError';
     });
 }
 
@@ -357,5 +455,6 @@ async function main() {
     await testMarshal();
     await testProxyFree();
     await testError();
+    await testInvalid();
 }
 main();
