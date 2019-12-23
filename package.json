@@ -8,7 +8,7 @@
   "devDependencies": {
     "coveralls": "^3.0.0",
     "eslint": "^6.0.0",
-    "nyc": "^14.0.0"
+    "nyc": "^15.0.0"
   },
   "scripts": {
     "test": "nyc node ./test",
