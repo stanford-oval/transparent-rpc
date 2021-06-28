@@ -1,0 +1,27 @@
+{
+    "include": [
+        "lib/**/*",
+    ],
+    "compilerOptions": {
+        "target": "es2019",
+        "lib": ["es2019"],
+        "module": "commonjs",
+        "allowJs": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "strict": true,
+        "noUnusedLocals": true,
+        "outDir": "dist",
+        "sourceMap": true,
+        "incremental": true,
+        "declaration": true
+    },
+    "typedocOptions": {
+        "out": "doc",
+        "readme": "README.md",
+        "includeVersion": true,
+        "excludeExternals": true,
+        "listInvalidSymbolLinks": true
+    }
+}

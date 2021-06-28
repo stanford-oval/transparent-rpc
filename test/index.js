@@ -26,10 +26,10 @@
 process.on('unhandledRejection', (up) => { throw up; });
 process.env.TEST_MODE = '1';
 
-const assert = require('assert');
-const Stream = require('stream');
+import assert from 'assert';
+import * as Stream from 'stream';
 
-const rpc = require('../lib/rpc_socket');
+import * as rpc from '../lib/rpc_socket';
 
 class MockSocket extends Stream.Duplex {
     constructor(options) {
@@ -116,13 +116,11 @@ async function testProxy() {
     });
 
     const proxy1 = await r1.call(stubId, 'getObject', ['x']);
-    assert(proxy1 instanceof rpc.Proxy);
     assert.strictEqual(typeof proxy1.getValue, 'function');
     assert.strictEqual(typeof proxy1.frobnicate, 'function');
     assert.strictEqual(typeof proxy1.hidden, 'undefined');
 
     const proxy2 = await r1.call(stubId, 'getObject', ['y']);
-    assert(proxy2 instanceof rpc.Proxy);
     assert.strictEqual(typeof proxy2.getValue, 'function');
     assert.strictEqual(typeof proxy2.frobnicate, 'function');
     assert.strictEqual(typeof proxy2.hidden, 'undefined');
@@ -168,7 +166,6 @@ async function testProxyOtherDirection() {
         $rpcMethods: ['checkObject'],
 
         async checkObject(proxy, value) {
-            assert(proxy instanceof rpc.Proxy);
             assert.strictEqual(typeof proxy.getValue, 'function');
             assert.strictEqual(typeof proxy.frobnicate, 'function');
             assert.strictEqual(typeof proxy.hidden, 'undefined');
@@ -227,7 +224,6 @@ async function testMarshal() {
             assert.strictEqual(stub.value, 'y');
             assert.strictEqual(stub.getValue(), 'y');
 
-            assert(proxy instanceof rpc.Proxy);
             assert.strictEqual(typeof proxy.getValue, 'function');
             assert.strictEqual(typeof proxy.frobnicate, 'function');
             assert.strictEqual(typeof proxy.hidden, 'undefined');
