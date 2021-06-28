@@ -1,3 +1,11 @@
+1.1.0
+=====
+
+* Fixed a bug if the two sides of the RPC channel are running
+  in different containers (so process IDs are not unique) [#37].
+* Ported to TypeScript [#38].
+* Updated dependencies.
+
 1.0.0
 =====
 

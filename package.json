@@ -1,6 +1,6 @@
 {
   "name": "transparent-rpc",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Easy to use async RPC for node, based on promises. Similar in spirit to Java RMI",
   "author": "Giovanni Campagna <gcampagn@cs.stanford.edu>",
   "main": "dist/rpc_socket.js",
