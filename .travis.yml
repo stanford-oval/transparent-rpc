@@ -2,17 +2,11 @@ branches:
   except:
   - "/^wip/"
 language: node_js
-node_js:
-- '10'
-- '12'
-before_install:
-- yarn global add greenkeeper-lockfile@1
-before_script: greenkeeper-lockfile-update
-after_script: greenkeeper-lockfile-upload
+node_js: '12'
 script:
-- yarn lint
-- TZ="America/Los_Angeles" yarn test
-after_success: yarn run coverage
+- npm run lint
+- TZ="America/Los_Angeles" npm run test
+after_success: npm run coverage
 notifications:
   slack:
     secure: Bt0e/9tT16VgrmjutvXQ0axkokz+wFeT6iuBDrrOX6rdehRNm/Y+Zebj9/LTDFTnw/Nk2Y9VjHWmtdzc/67P5/B9oCCCeYDYzRs3Li97A0SXMN+UpKDpnvSX9bhQGQNYjsWJ1TvdCOg5kE7Ps5YIMCDUfMomh6Ozlq2ROKso/XzOdXzPH9iGpoyUerHZDigacZZ9s5QBGAEaIf4XThPksAHGOFvK0Wju9wvnO/5Ds8v3968JLQO04lyyGFopezAFAn8IMqgus2Zbi0QA9+ZSW6RJQ5eWOfmfvA8hluRVo6FxQsc0vdSGgbC76LehJDWcSwwoHvvypomR5Jc3MhVezuj8t2g18HN4cJOj80dRcd1dCPVe8Di1fpKMIhqun/q52KJ98vF8tXn9T5DmhsZvfC+2dAVfZrML921XEne1816WtUc0fcwt/qdYDpkTLx1VJNFmNUVv4cfECSrEGC+vdvAz9IYDzp6L1oTm33LA4avvJPikEpIUSgs93s93+G2u/J3NQOEafuVropqgs1jTBM7pCBvSZ+RZ3vK0rFB1DPdjnKOSdiTCSwEmDdw0ceqesaq9G2isGl683T7pAdi1fH1HJfvXpVYtou60MBbIBlmr4oFIFe6TPlYf+OacW90IpwbxMgpOj9wdesTAgymLBnP91cAX2bsh75gussHNNEw=

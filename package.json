@@ -3,17 +3,27 @@
   "version": "1.0.0",
   "description": "Easy to use async RPC for node, based on promises. Similar in spirit to Java RMI",
   "author": "Giovanni Campagna <gcampagn@cs.stanford.edu>",
-  "main": "lib/rpc_socket.js",
+  "main": "dist/rpc_socket.js",
   "dependencies": {},
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.1",
+    "@types/node": "^15.12.5",
+    "@typescript-eslint/eslint-plugin": "^4.13.0",
+    "@typescript-eslint/parser": "^4.13.0",
     "coveralls": "^3.0.0",
-    "eslint": "^7.2.0",
-    "nyc": "^15.0.0"
+    "eslint": "^7.17.0",
+    "nyc": "^15.0.0",
+    "source-map-support": "^0.5.19",
+    "ts-node": "^9.1.1",
+    "typedoc": "^0.20.7",
+    "typescript": "~4.2.0"
   },
   "scripts": {
-    "test": "nyc node ./test",
-    "lint": "eslint ./lib",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "test": "nyc ts-node ./test",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx ./lib",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "prepare": "tsc --build tsconfig.json",
+    "doc": "typedoc lib/rpc_socket.ts"
   },
   "repository": {
     "type": "git",
@@ -27,5 +37,12 @@
   "bugs": {
     "url": "https://github.com/stanford-oval/transparent-rpc/issues"
   },
-  "homepage": "https://github.com/stanford-oval/transparent-rpc#readme"
+  "homepage": "https://github.com/stanford-oval/transparent-rpc#readme",
+  "nyc": {
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "exclude": [
+      "test/**",
+      "coverage/**"
+    ]
+  }
 }
