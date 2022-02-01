@@ -16,7 +16,7 @@
     "source-map-support": "^0.5.19",
     "ts-node": "^10.0.0",
     "typedoc": "^0.22.4",
-    "typescript": "~4.3.5"
+    "typescript": "~4.5.5"
   },
   "scripts": {
     "test": "nyc ts-node ./test",
