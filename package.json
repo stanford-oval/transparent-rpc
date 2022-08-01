@@ -7,7 +7,7 @@
   "dependencies": {},
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "@types/node": "^16.4.10",
+    "@types/node": "^18.6.3",
     "@typescript-eslint/eslint-plugin": "^4.13.0",
     "@typescript-eslint/parser": "^4.13.0",
     "coveralls": "^3.0.0",
